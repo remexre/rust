@@ -572,7 +572,13 @@ pub fn build_rules<'a>(build: &'a Build) -> Rules {
          .run(move |s| compile::tool(build, s.stage, s.target, "cargo"));
     rules.build("tool-rls", "rls")
          .host(true)
-         .dep(|s| s.name("libstd"))
+         .dep(|s| s.name("librustc"))
+         .dep(move |s| {
+             // rls, like cargo, uses procedural macros
+             s.name("librustc-link")
+              .target(&build.config.build)
+              .host(&build.config.build)
+         })
          .run(move |s| compile::tool(build, s.stage, s.target, "rls"));
 
     // ========================================================================
